@@ -1,11 +1,11 @@
-=== PlugInstaller 0.1 ===
+=== PlugInstaller ===
 Contributors: hschaefer
 Tags: plugin, admin, install
 Requires at least: 2.0.2
 Tested up to: 2.2
 Stable tag: 0.1.6
 
-PlugInstaller enables your WP admin interface to automatically install and uninstall plugins.
+Install and uninstall plugins from your admin interface without manually uploading the plugins via FTP
 
 == Description ==
 
