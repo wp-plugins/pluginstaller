@@ -1,6 +1,6 @@
 === PlugInstaller ===
-Contributors: hschaefer
-Tags: plugin, admin, install
+Contributors: hschaefer, angrycamel
+Tags: plugin, admin, install, manage, upload
 Requires at least: 2.0.2
 Tested up to: 2.2
 Stable tag: 0.1.6
@@ -16,13 +16,11 @@ With PlugInstaller you will no longer have to use any other software than your W
 == Installation ==
 
 IMPORTANT: 	This plugin DOES NOT work on a windows server, as there are no commandline tools
-		to unpack archives.
+to unpack archives.
 
 PREREQUISITES: 	Make sure your server has the following tools installed and readily available within the
-		search path: "tar", "gzip" and "unzip".
-
-		Also, set your wp-content/plugins directory to world-writeable (chmod -R 777 plugins) or at
-		least writeable to your httpd user.
+search path: "tar", "gzip" and "unzip".
+Also, set your wp-content/plugins directory to world-writeable (chmod -R 777 plugins) or at least writeable to your httpd user.
 
 Carefully follow the following steps as it is probably the last time you will ever do this:
 

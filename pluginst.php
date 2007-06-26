@@ -3,7 +3,7 @@
 Plugin Name: PlugInstaller
 Plugin URI: http://henning.imaginemore.de/pluginstaller/
 Description: Easy (un)installation of new plugins directly from the admin interface
-Version: 0.1.6
+Version: 0.1.7
 Author: Henning Schaefer
 Author URI: http://henning.imaginemore.de
 */
@@ -43,6 +43,21 @@ function uclose ( $fp ) {
 		 	return @pclose( $fp );
 		 }
 		 return true;
+}
+
+// cURL fallback routine for file_get_contents()
+function u_get_contents ( $filename ) {
+         if ($file = @file_get_contents ( $filename )) {
+         } else {
+        	$curl = curl_init( $filename );
+            curl_setopt($curl, CURLOPT_HEADER, 0);  // ignore any headers
+            ob_start();  // use output buffering so the contents don't get sent directly to the browser
+            curl_exec($curl);  // get the file
+            curl_close($curl);
+            $file = ob_get_contents();  // save the contents of the file into $file
+            ob_end_clean();  // turn output buffering back off		 
+         }
+         return $file;
 }
 
 // Check for updates:
@@ -430,7 +445,7 @@ function install_from_url($url) {
   $dest_file = $dest_dir . "plugin".$ext;
   
   // Download file
-  $file = file_get_contents($url);
+  $file = u_get_contents($url);
   $df = uopen($dest_file, 'w');
   if (!fwrite($df, $file)) {
     return "A problem has occured while trying to download your file!";
