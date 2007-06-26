@@ -62,7 +62,7 @@ function u_get_contents ( $filename ) {
 
 // Check for updates:
 function pi_check_for_update() {
-  $current_version = '0.1.6';
+  $current_version = '0.1.7';
   $fp = uopen('http://henning.imaginemore.de/pi-version.txt','r');
   $available_version = fgets($fp);
   uclose($fp);
