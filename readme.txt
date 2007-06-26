@@ -3,7 +3,7 @@ Contributors: hschaefer, angrycamel
 Tags: plugin, admin, install, manage, upload
 Requires at least: 2.0.2
 Tested up to: 2.2
-Stable tag: 0.1.7
+Stable tag: 0.2.0
 
 Install and uninstall plugins from your admin interface without manually uploading the plugins via FTP
 

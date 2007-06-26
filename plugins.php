@@ -1,5 +1,12 @@
 <?php
-// require_once('admin.php');
+$this_dir = substr($_SERVER['SCRIPT_FILENAME'],0,strlen($_SERVER['SCRIPT_FILENAME']) - 20) . PLUGINDIR . '/pluginstaller';
+
+require_once($this_dir . '/ui.php');
+require_once($this_dir . '/readme.php');
+require_once($this_dir . '/uninstall.php');
+require_once($this_dir . '/install.php');
+require_once($this_dir . '/update.php');
+require_once($this_dir . '/utils.php');
 
 if ( isset($_GET['action']) ) {
 	if ('activate' == $_GET['action']) {
@@ -27,11 +34,20 @@ if ( isset($_GET['action']) ) {
 		do_action('deactivate_' . trim( $_GET['plugin'] ));
 		wp_redirect('plugins.php?deactivate=true');
 		exit;
-	}
+	} elseif ($_GET['action'] == 'deactivate-all') {
+		check_admin_referer('deactivate-all');
+		$current = get_option('active_plugins');
+		
+		foreach ($current as $plugin) {
+			array_splice($current, array_search($plugin, $current), 1);
+			do_action('deactivate_' . $plugin);
+		}
+		
+		update_option('active_plugins', array());
+		wp_redirect('plugins.php?deactivate-all=true');
+		exit;
+	} 
 }
-
-//$title = __('Manage Plugins');
-//require_once('admin-header.php');
 
 // Clean up options
 // If any plugins don't exist, axe 'em
@@ -39,10 +55,18 @@ if ( isset($_GET['action']) ) {
 if ($_GET["readme"] != "") {
 ?>
 <div class="wrap">
-<h2>Readme</h2>
-<a href='plugins.php'>Go back</a><br>
 
-<div style='overflow: auto; height: 300px; border: 1px solid #000000;'>
+<div id="advancedstuff" class="dbx-group" >
+
+<div class="dbx-b-ox-wrapper">
+<fieldset id="postexcerpt" class="dbx-box">
+<div class="dbx-h-andle-wrapper">
+<h3 class="dbx-handle"><?php _e('Readme') ?> (<a href='plugins.php'>Go back</a>)</h3>
+</div>
+<div class="dbx-c-ontent-wrapper">
+<div class="dbx-content">
+
+<div style='overflow: auto; height: 300px;'>
 <?php
 
 function parse_readme($readme) {
@@ -86,7 +110,6 @@ if (file_exists($readme_dir . 'readme.html')) {
 }
 
 
-
 // Display:
 if ($filename == "") {
   echo "<h3>Sorry, there is no readme file available for this plugin!</h3>";
@@ -101,13 +124,22 @@ if ($filename == "") {
 ?>
 </div>
 
-<a href='plugins.php'>Go back</a><br>
 </div>
+</div>
+</fieldset>
+</div>
+
+
+</div>
+
+
 
 
 <?php
 
 }else{
+
+pi_install();
 
 $check_plugins = get_option('active_plugins');
 
@@ -132,6 +164,30 @@ foreach ($check_plugins as $check_plugin) {
 }
 ?>
 
+<?php
+
+// Check for updates:
+if ($_GET['update'] == 'check') {
+?>
+
+<div id="message" class="updated fade"><p><?php echo pi_check_for_updated_plugins(); ?></p>
+</div>
+
+<?php
+}
+
+// Perform update:
+if (($_GET['update'] != 'check') && ($_GET['update'] != '')) {
+?>
+
+<div id="message" class="updated fade"><p><?php echo pi_perform_update($_GET['update'], $_GET['tag']); ?></p>
+</div>
+
+<?php
+}
+
+?>
+
 <?php if (isset($_GET['activate'])) : ?>
 <div id="message" class="updated fade"><p><?php _e('Plugin <strong>activated</strong>.') ?></p>
 </div>
@@ -140,6 +196,11 @@ foreach ($check_plugins as $check_plugin) {
 <div id="message" class="updated fade"><p><?php _e('Plugin <strong>deactivated</strong>.') ?></p>
 </div>
 <?php endif; ?>
+<?php if (isset($_GET['deactivate-all'])) : ?>
+	<div id="message" class="updated fade"><p><?php _e('All plugins <strong>deactivated</strong>.'); ?></p></div>
+<?php endif; ?>
+
+<?php pi_check_for_update(); ?>
 
 <div class="wrap">
 <h2><?php _e('Plugin Management'); ?></h2>
@@ -157,30 +218,62 @@ if (empty($plugins)) {
 	echo '</p>';
 } else {
 ?>
-<table class="widefat plugins">
-	<thead>
-	<tr>
-		<th><?php _e('Plugin'); ?></th>
-		<th style="text-align: center"><?php _e('Version'); ?></th>
-		<th><?php _e('Description'); ?></th>
-		<th style="text-align: center"<?php if ( current_user_can('edit_plugins') ) echo ' colspan="3"'; ?>><?php _e('Action'); ?></th>
-		
-	</tr>
-	</thead>
+
+<div id="advancedstuff" class="dbx-group" >
+
+<div class="dbx-b-ox-wrapper">
+<fieldset id="postexcerpt" class="dbx-box">
+<div class="dbx-h-andle-wrapper">
+<h3 class="dbx-handle"><?php _e('Install a new Plugin') ?> (<a href='javascript:void(null)' onClick="document.getElementById('manual').style.display = 'block';">Help</a>)</h3>
+</div>
+<div class="dbx-c-ontent-wrapper">
+<div class="dbx-content">
+
+<div id='manual' style='display: none;'>
+  <?php pi_manual(); ?>
+</div>
+
+<?php pi_install_section(); ?>
+
+<?php _e('You can find additional plugins for your site in the <a href="http://wordpress.org/extend/plugins/">WordPress plugin directory</a>.'); ?>
+</div>
+</div>
+</fieldset>
+</div>
+
+<div class="dbx-b-ox-wrapper">
+<fieldset id="postexcerpt" class="dbx-box">
+<div class="dbx-h-andle-wrapper">
+<h3 class="dbx-handle"><?php _e('Active Plugins') ?> (<a href="<?php echo wp_nonce_url('plugins.php?action=deactivate-all', 'deactivate-all'); ?>"><?php _e('Deactivate All Plugins'); ?></a> | <a href="plugins.php?update=check"><?php _e('Check for updates'); ?></a>)</h3>
+</div>
+<div class="dbx-c-ontent-wrapper">
+<div class="dbx-content">
+
+<table style="width: 100%;" cellspacing='0' cellpadding='0'>
 <?php
+
+    $available = '';
+
 	$style = '';
+	
+	$count = 0;
+
+    $updates = get_option('updated_plugins');
 
 	foreach($plugins as $plugin_file => $plugin_data) {
-		$style = ('class="alternate"' == $style|| 'class="alternate active"' == $style) ? '' : 'alternate';
+	    $echo = false;
+		//$style = ('class="alternate"' == $style|| 'class="alternate active"' == $style) ? '' : 'alternate';
 
 		if (!empty($current_plugins) && in_array($plugin_file, $current_plugins)) {
 			$toggle = "<a href='" . wp_nonce_url("plugins.php?action=deactivate&amp;plugin=$plugin_file", 'deactivate-plugin_' . $plugin_file) . "' title='".__('Deactivate this plugin')."' class='delete'>".__('Deactivate')."</a>";
 			$plugin_data['Title'] = "<strong>{$plugin_data['Title']}</strong>";
-			$style .= $style == 'alternate' ? ' active' : 'active';
+			$echo = true;
+			$uninstall = "";
 		} else {
 			$toggle = "<a href='" . wp_nonce_url("plugins.php?action=activate&amp;plugin=$plugin_file", 'activate-plugin_' . $plugin_file) . "' title='".__('Activate this plugin')."' class='edit'>".__('Activate')."</a>";
+			$uninstall = "</td><td style='width: 150px; vertical-align: top;'><a class='delete' href='/wp-admin/plugins.php?page=".$_GET['page']."&uninstall=".$plugin_file."'>".__('Uninstall')."</a>";
 		}
-		$readme = "<a href='plugins.php?readme=$plugin_file' title='".__('Display the readme file')."' class='edit'>".__('Readme')."</a>";
+		$readme = "<a href='plugins.php?readme=$plugin_file' title='".__('Display the readme file')."' class='edit'>".__('View Readme')."</a>";
 
 		$plugins_allowedtags = array('a' => array('href' => array(),'title' => array()),'abbr' => array('title' => array()),'acronym' => array('title' => array()),'code' => array(),'em' => array(),'strong' => array());
 
@@ -193,36 +286,73 @@ if (empty($plugins)) {
 		if ( $style != '' )
 			$style = 'class="' . $style . '"';
 		if ( is_writable(ABSPATH . 'wp-content/plugins/' . $plugin_file) )
-			$edit = "<a href='plugin-editor.php?file=$plugin_file' title='".__('Open this file in the Plugin Editor')."' class='edit'>".__('Edit')."</a>";
+			$edit = "<a href='plugin-editor.php?file=$plugin_file' title='".__('Open this file in the Plugin Editor')."'>".__('Edit')."</a>";
 		else
 			$edit = '';
-
-		echo "
-	<tr $style>
-		<td class='name'>{$plugin_data['Title']}</td>
-		<td class='vers'>{$plugin_data['Version']}</td>
-		<td class='desc'><p>{$plugin_data['Description']} <cite>".sprintf(__('By %s'), $plugin_data['Author']).".</cite></p></td>
-		<td class='readme'>$readme</td>
-		<td class='togl'>$toggle</td>";
+  
+		$output = "<tr id='row$count' onMouseOver=\"document.getElementById('row$count').style.backgroundColor = '#b8d4ff';\" onMouseOut=\"document.getElementById('row$count').style.backgroundColor = '#ffffff';\" $style>";
+		$output .= "<td class='name' >";
+		$output .= "<strong id='tick$count' style='cursor: pointer;' onClick=\"if (document.getElementById('descr$count').style.display == 'block') { document.getElementById('descr$count').style.display = 'none'; this.innerHTML = '[+]';}else{ document.getElementById('descr$count').style.display = 'block'; this.innerHTML = '[-]';}\">[+]</strong>";
+		$output .= " {$plugin_data['Title']}";
+		
+		if (array_key_exists($plugin_file, $updates)) {
+		  $output .= " <span onClick=\"if (confirm('Would you like to update ".strip_tags($plugin_data['Title'])." from version ".$plugin_data['Version']." to version ".$updates[$plugin_file]."?')) { window.location.href = 'plugins.php?update=".$plugin_file."&tag=".$updates[$plugin_file]."'; }\" style='cursor: pointer; padding: 2px; border: 1px solid #c0c000; background-color: #ffff80; color: #c00000; font-size: 7pt; font-weight: bold;'>UPDATE!</span>";
+		}
+		
+		$output .= "<div id='descr$count' style='display: none;'><cite>".sprintf(__('By %s'), $plugin_data['Author'])."</cite>, <strong>Version:</strong> {$plugin_data['Version']}<br /><br />";
+		$output .= "{$plugin_data['Description']}";
 		if ( current_user_can('edit_plugins') )
-		echo "
-		<td>$edit</td>";
-		echo"
-	</tr>";
+		  $output .=  ' '.$edit;
+		$output .= '<br />&nbsp;</div></td>';
+		$output .= "<td class='togl' style='width: 150px; vertical-align: top;'>$toggle</td>
+		<td class='readme' style='width: 150px; vertical-align: top;'>$readme</td>";
+		$output .= $uninstall;
+		$output .= "</td></tr>";
+	    if (!$echo) {
+          $available .= $output;
+        }else{
+          echo $output;
+        }
+        $count++;
 	}
 ?>
 
 </table>
+<br />
+<?php printf(__('If something goes wrong with a plugin and you can&#8217;t use WordPress, delete or rename that file in the <code>%s</code> directory and it will be automatically deactivated.'), PLUGINDIR); ?>
+</div>
+</div>
+</fieldset>
+</div>
+
+<div class="dbx-b-ox-wrapper">
+<fieldset id="postexcerpt" class="dbx-box">
+<div class="dbx-h-andle-wrapper">
+<h3 class="dbx-handle"><?php _e('Available but Inactive Plugins') ?></h3>
+</div>
+<div class="dbx-c-ontent-wrapper">
+<div class="dbx-content">
+
+<table style="width: 100%;" cellspacing='0' cellpadding='0'>
+	
+<?php
+
+echo $available;
+
+?>	
+	
+</table>
+
+</div>
+</div>
+</fieldset>
+</div>
+
+</div>
+
 <?php
 }
 ?>
-
-<p><?php printf(__('If something goes wrong with a plugin and you can&#8217;t use WordPress, delete or rename that file in the <code>%s</code> directory and it will be automatically deactivated.'), PLUGINDIR); ?></p>
-
-<h2><?php _e('Get More Plugins'); ?></h2>
-<p><?php _e('You can find additional plugins for your site in the <a href="http://wordpress.org/extend/plugins/">WordPress plugin directory</a>.'); ?></p>
-<p><?php printf(__('To install a plugin you generally just need to upload the plugin file into your <code>%s</code> directory. Once a plugin is uploaded, you may activate it here.'), PLUGINDIR); ?></p>
-
 </div>
 
 <?php } ?>
