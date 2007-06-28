@@ -244,7 +244,7 @@ if (empty($plugins)) {
 <div class="dbx-b-ox-wrapper">
 <fieldset id="postexcerpt" class="dbx-box">
 <div class="dbx-h-andle-wrapper">
-<h3 class="dbx-handle"><?php _e('Active Plugins') ?> (<a href="<?php echo wp_nonce_url('plugins.php?action=deactivate-all', 'deactivate-all'); ?>"><?php _e('Deactivate All Plugins'); ?></a> | <a href="plugins.php?update=check"><?php _e('Check for updates'); ?></a>)</h3>
+<h3 class="dbx-handle"><?php _e('Active Plugins') ?></h3>
 </div>
 <div class="dbx-c-ontent-wrapper">
 <div class="dbx-content">
