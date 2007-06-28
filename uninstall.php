@@ -16,7 +16,7 @@ function uninstall_plugin($filename) {
   }
   
   // Check for other plugins within that directory:
-  $dest_dir = substr($_SERVER['SCRIPT_FILENAME'],0,strlen($_SERVER['SCRIPT_FILENAME']) - 20) . "wp-content/plugins/";
+  $dest_dir = ABSPATH . PLUGINDIR . '/';
   $dp = opendir($dest_dir . $subdir);
   // Parse directory:
   $phpfiles = array();

@@ -271,7 +271,7 @@ if (empty($plugins)) {
 			$uninstall = "";
 		} else {
 			$toggle = "<a href='" . wp_nonce_url("plugins.php?action=activate&amp;plugin=$plugin_file", 'activate-plugin_' . $plugin_file) . "' title='".__('Activate this plugin')."' class='edit'>".__('Activate')."</a>";
-			$uninstall = "</td><td style='width: 150px; vertical-align: top;'><a class='delete' href='/wp-admin/plugins.php?page=".$_GET['page']."&uninstall=".$plugin_file."'>".__('Uninstall')."</a>";
+			$uninstall = "</td><td style='width: 150px; vertical-align: top;'><a class='delete' href='javascript:void(null)' onClick=\"if (confirm('Do you really want to uninstall ".strip_tags($plugin_data['Title'])."?')) {window.location.href='/wp-admin/plugins.php?page=".$_GET['page']."&uninstall=".$plugin_file."'; }\">".__('Uninstall')."</a>";
 		}
 		$readme = "<a href='plugins.php?readme=$plugin_file' title='".__('Display the readme file')."' class='edit'>".__('View Readme')."</a>";
 
@@ -316,6 +316,11 @@ if (empty($plugins)) {
         $count++;
 	}
 ?>
+<tr>
+  <td><br /><input type='button' class='button' value='Check for updated plugins' onClick='window.location.href = "plugins.php?update=check";'></td>
+  <td align='center'><br /><input type='button' class='button' value='Deactivate all' onClick='if (confirm("Do you really want to deactivate all plugins?")) { window.location.href = "<?php echo wp_nonce_url('plugins.php?action=deactivate-all', 'deactivate-all'); ?>"; }'></td>
+  <td>&nbsp;</td>
+</tr>
 
 </table>
 <br />

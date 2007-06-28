@@ -33,7 +33,7 @@ Visit the <a href='http://henning.imaginemore.de' target='_blank'>author's blog<
 // Installer section:
 function pi_install_section() {
 ?>       
-          <form name="fromurl" method="post" enctype="multipart/form-data" action="<?=$location?>">
+          <form name="fromurl" method="post" enctype="multipart/form-data" action="plugins.php">
                 Enter URL: <input name="fileurl" type="text" />
                 or select a file: <input name="filename" type="file" />
                 <input type="submit" class='button' name='installfile' value="Install" />

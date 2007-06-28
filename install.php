@@ -7,7 +7,7 @@ function install_from_file() {
   }
   
   // Determine destination directory
-  $dest_dir = substr($_SERVER['SCRIPT_FILENAME'],0,strlen($_SERVER['SCRIPT_FILENAME']) - 20) . "wp-content/plugins/";
+  $dest_dir = ABSPATH . PLUGINDIR . '/';
   $dest_file = $dest_dir . $_FILES['filename']['name'];
   
   // Move file to destination directory
@@ -19,6 +19,7 @@ function install_from_file() {
 } // install_from_file()
 
 function install_from_url($url) {
+  global $upd_info;
   // Check input:
   if ($url == "") {
     return "Please select a URL to be downloaded!";
@@ -28,16 +29,22 @@ function install_from_url($url) {
   $ext = "";
   if (strpos($url,'.zip')) {
     $ext = ".zip";
+    // Get SVN Name
+    $upd_info = substr(trim($url), strrpos(trim($url),'/') + 1, strlen(trim($url)) - 4);
+    // Remove Version info
+    $upd_info = substr($upd_info, 0, strpos($upd_info,'.'));
   }
   if (strpos($url,'.tar.gz')) {
     $ext = ".tar.gz";
+    $upd_info = substr(trim($url), strrpos(trim($url),'/') + 1, strlen(trim($url)) - 7);
+    $upd_info = substr($upd_info, 0, strpos($upd_info,'.'));
   }
   if ($ext == "") {
     $ext = ".pitmp";
   }
 
   // Determine destination directory
-  $dest_dir = substr($_SERVER['SCRIPT_FILENAME'],0,strlen($_SERVER['SCRIPT_FILENAME']) - 20) . "wp-content/plugins/";
+  $dest_dir = ABSPATH . PLUGINDIR .'/';
   $dest_file = $dest_dir . "plugin".$ext;
   
   // Download file
@@ -52,9 +59,11 @@ function install_from_url($url) {
 
 function perform_install($package) {
   global $readme_dir;
+  global $upd_info;
+  global $main_file;
   
   $output = Array();
-  $dest_dir = substr($_SERVER['SCRIPT_FILENAME'],0,strlen($_SERVER['SCRIPT_FILENAME']) - 20) . "wp-content/plugins/";
+  $dest_dir = ABSPATH . PLUGINDIR . '/';
   
   // Determine file type (zip/tar.gz)
   $cmd = "";
@@ -94,12 +103,21 @@ function perform_install($package) {
   
   // get Readme file location:
   if ($output_pos == 0) {
-    $readme_dir = $dest_dir . $output[$output_pos];
+    $final_pos = $dest_dir . $output[$output_pos];
   }else{
     $parts = array();
     eregi('(.*)/plugins/(.*)/(.*)',$output[$output_pos],$parts);
-    $readme_dir = $dest_dir . $parts[2] . '/';
+    $final_pos = $dest_dir . $parts[2] . '/';
   }
+  
+  $final_pos = pi_sanitize($final_pos);
+  
+  $readme_dir = $final_pos;
+  
+  // Save update information:
+  $fp = fopen($readme_dir . '.pi-update', 'w');
+  fwrite($fp, $upd_info."\n".$main_file."\n");
+  fclose($fp);
   
   // Delete downloaded package (clean up):
   unlink($package);
@@ -107,5 +125,13 @@ function perform_install($package) {
   return "";
   
 }  // perform_install()
+
+
+// Sanitize plugin 
+function pi_sanitize($position) {
+  global $main_file;
+  //echo $position;
+  return $position;
+}
 
 ?>
