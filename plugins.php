@@ -1,5 +1,5 @@
 <?php
-$this_dir = substr($_SERVER['SCRIPT_FILENAME'],0,strlen($_SERVER['SCRIPT_FILENAME']) - 20) . PLUGINDIR . '/pluginstaller';
+$this_dir = ABSPATH . PLUGINDIR . '/pluginstaller';
 
 require_once($this_dir . '/ui.php');
 require_once($this_dir . '/readme.php');
@@ -295,7 +295,7 @@ if (empty($plugins)) {
 		$output .= "<strong id='tick$count' style='cursor: pointer;' onClick=\"if (document.getElementById('descr$count').style.display == 'block') { document.getElementById('descr$count').style.display = 'none'; this.innerHTML = '[+]';}else{ document.getElementById('descr$count').style.display = 'block'; this.innerHTML = '[-]';}\">[+]</strong>";
 		$output .= " {$plugin_data['Title']}";
 		
-		if (array_key_exists($plugin_file, $updates)) {
+		if (@array_key_exists($plugin_file, $updates)) {
 		  $output .= " <span onClick=\"if (confirm('Would you like to update ".strip_tags($plugin_data['Title'])." from version ".$plugin_data['Version']." to version ".$updates[$plugin_file]."?')) { window.location.href = 'plugins.php?update=".$plugin_file."&tag=".$updates[$plugin_file]."'; }\" style='cursor: pointer; padding: 2px; border: 1px solid #c0c000; background-color: #ffff80; color: #c00000; font-size: 7pt; font-weight: bold;'>UPDATE!</span>";
 		}
 		
