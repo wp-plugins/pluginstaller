@@ -3,7 +3,7 @@
 Plugin Name: PlugInstaller
 Plugin URI: http://henning.imaginemore.de/pluginstaller/
 Description: Easy (un)installation of new plugins directly from the admin interface
-Version: 0.1.9
+Version: 0.1.95
 Author: Henning Schaefer
 Author URI: http://henning.imaginemore.de
 */
@@ -27,8 +27,8 @@ Author URI: http://henning.imaginemore.de
 
 // Replace old plugins page
 function pi_replace_plugins_page() {
-   if (($_SERVER['SCRIPT_NAME'] == '/wp-admin/plugins.php') && ($_GET['page'] == '')) {
-     include(substr(__FILE__,0,strlen(__FILE__) - 12).'plugins.php');
+   if ((strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/plugins.php')) && ($_GET['page'] == '')) {
+     include(ABSPATH. PLUGINDIR .'/pluginstaller/plugins.php');
      die();
    }
 }
