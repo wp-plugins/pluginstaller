@@ -87,7 +87,7 @@ function parse_readme($readme) {
 $parts = array();
 eregi('([^/]*)/(.*)',$_GET["readme"], $parts);
 
-$readme_dir = $dest_dir = substr($_SERVER['SCRIPT_FILENAME'],0,strlen($_SERVER['SCRIPT_FILENAME']) - 20) . "wp-content/plugins/" . $parts[1] . '/';
+$readme_dir  = ABSPATH . PLUGINDIR . '/' . $parts[1] . '/';
 
 if (file_exists($readme_dir . 'readme.html')) {
   $filename = $readme_dir . 'readme.html';

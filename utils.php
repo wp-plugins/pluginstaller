@@ -43,7 +43,7 @@ function pi_check_for_update() {
   uclose($fp);
   if ($current_version != $available_version) {
   ?>
-  <div id="message" class="updated fade"><p>A newer version of plugInstaller is available! <a href='http://henning.imaginemore.de/pluginstaller/' target='_blank'>Update...</a></p></div>
+  <div id="message" class="updated fade"><p>A newer version of PlugInstaller is available! <a href='http://henning.imaginemore.de/pluginstaller/' target='_blank'>Update...</a></p></div>
   <?php
   }
 }
