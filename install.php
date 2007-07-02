@@ -106,7 +106,7 @@ function perform_install($package) {
     $final_pos = $dest_dir . $output[$output_pos];
   }else{
     $parts = array();
-    eregi('(.*)/plugins/(.*)/(.*)',$output[$output_pos],$parts);
+    eregi('(.*)/plugins/([^/]*)/(.*)',$output[$output_pos],$parts);
     $final_pos = $dest_dir . $parts[2] . '/';
   }
   
@@ -116,7 +116,7 @@ function perform_install($package) {
   
   // Save update information:
   $fp = fopen($readme_dir . '.pi-update', 'w');
-  fwrite($fp, $upd_info."\n".$main_file."\n");
+  fwrite($fp, $upd_info);
   fclose($fp);
   
   // Delete downloaded package (clean up):
@@ -126,12 +126,107 @@ function perform_install($package) {
   
 }  // perform_install()
 
+// Recurse a directory with PHP files
+function pi_recurse( $dir, &$output )
+{
+        if (is_dir($dir)) {
+           if ($dh = opendir($dir)) {
+               while (($file = readdir($dh)) !== false ) {
+                        if( $file != "." && $file != ".." )
+                        {
+                                if( is_dir( $dir . $file ) )
+                                {
+                                        pi_recurse( $dir . $file . "/" , $output);
+                                }
+                                else
+                                {
+                                 	if (strpos($file, '.php')) {
+                                        array_push($output, $dir . $file);
+                                    }
+                                }
+                        }
+               }
+               closedir($dh);
+           }
+        }
+}
+
+// Move a directory stucture
+function dirmv($source, $dest, $overwrite = false, $funcloc = NULL){
+
+  if(is_null($funcloc)){
+    $dest .= '/' . strrev(substr(strrev($source), 0, strpos(strrev($source), '/')));
+    $funcloc = '/';
+  }
+
+  if(!is_dir($dest . $funcloc))
+    mkdir($dest . $funcloc); // make subdirectory before subdirectory is copied
+
+  if($handle = opendir($source . $funcloc)){ // if the folder exploration is sucsessful, continue
+    while(false !== ($file = readdir($handle))){ // as long as storing the next file to $file is successful, continue
+      if($file != '.' && $file != '..'){
+        $path  = $source . $funcloc . $file;
+        $path2 = $dest . $funcloc . $file;
+
+        if(is_file($path)){
+          if(!is_file($path2)){
+            if(!@rename($path, $path2)){
+              echo '<font color="red">File ('.$path.') could not be moved, likely a permissions problem.</font>';
+            }
+          } elseif($overwrite){
+            if(!@unlink($path2)){
+              echo 'Unable to overwrite file ("'.$path2.'"), likely to be a permissions problem.';
+            } else
+              if(!@rename($path, $path2)){
+                echo '<font color="red">File ('.$path.') could not be moved while overwritting, likely a permissions problem.</font>';
+              }
+          }
+        } elseif(is_dir($path)){
+          dirmv($source, $dest, $overwrite, $funcloc . $file . '/'); //recurse!
+          rmdir($path);
+        }
+      }
+    }
+    closedir($handle);
+  }
+} // end of dirmv()
+
 
 // Sanitize plugin 
 function pi_sanitize($position) {
-  global $main_file;
-  //echo $position;
-  return $position;
+  
+  // Parse for PHP files
+  $pfiles = array();
+  pi_recurse($position, $pfiles);
+  
+  // Look for the main plugin file:
+  foreach ($pfiles as $filename) {
+    $plugin_cfile = file_get_contents($filename);
+    if (eregi('lugin Name',$plugin_cfile)) {
+      $main_file = $filename;
+      break;
+    }
+    
+  }
+  // Did the position change?
+  $mfparts = explode('/',$main_file);
+  $mfdir = $mfparts[count($mfparts) - 2];
+  $pparts = explode('/',$position);
+  $pdir = $pparts[count($pparts) - 2];
+  if ($mfdir != $pdir) {
+    // move main files to new dir:
+    $o_mfdir = substr($main_file, 0, strrpos($main_file, '/'));
+    dirmv($o_mfdir, ABSPATH . PLUGINDIR);
+    // move files from original folder to new dir:
+    dirmv($position, ABSPATH . PLUGINDIR . '/' . $mfdir);
+    // delete original folder
+    rmdir($position);
+    return ABSPATH . PLUGINDIR . '/' . $mfdir;
+  }else{
+    // Nothing to be done:
+    return $position;
+  }
+  // C:\Users\Henning Schaefer\Desktop\sphere-related-content.zip
 }
 
 ?>
