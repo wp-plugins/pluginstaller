@@ -1,5 +1,16 @@
 <?php
 
+function pi_force_delete($dirname) {
+  $dest_dir = ABSPATH . PLUGINDIR . '/' . $dirname;
+  exec("rm -r ".$dest_dir,$output,$result);
+    if ($result > 0) {
+      $message .= "The plugin directory could not be deleted. Check for the appropriate rights in your <i>/wp-content/plugins</i> directory!";
+    }else{
+      $message = "$dirname has been successfully deleted.";
+    }
+  return $message;
+}
+
 function uninstall_plugin($filename) {
 
   // Get Subdirectory information for plugin:
