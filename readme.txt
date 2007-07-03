@@ -1,5 +1,6 @@
 === PlugInstaller ===
 Contributors: hschaefer, angrycamel
+Donate link: http://henning.imaginemore.de/pluginstaller/donate
 Tags: plugin, admin, install, manage, upload
 Requires at least: 2.0.2
 Tested up to: 2.2
@@ -21,7 +22,7 @@ As of version 0.2, you will also be able to install critical plugin packages tha
 == Installation ==
 
 IMPORTANT: 	This plugin DOES NOT work on a windows server, as there are no commandline tools
-to unpack archives.
+to unpack archives, but it works great when connecting from windows to a linux/unix server.
 
 PREREQUISITES: 	Make sure your server has the following tools installed and readily available within the
 search path: "tar", "gzip" and "unzip".
@@ -34,6 +35,11 @@ Carefully follow the following steps as it is probably the last time you will ev
 1. Go to your "plugins" administration page and activate the PlugInstaller plugin
 
 == Frequently Asked Questions ==
+
+= What does 'does not work with windows' mean? =
+
+This just means that you cannot use this plugin on a server that is based on a windows operating system. You can, of course, use it on your linux server
+if you browse the internet from a windows-based client computer.
 
 = Where is my plugins management page gone? =
 
@@ -76,6 +82,12 @@ contains a directory named "pluginstaller". Don't make your plugin require to be
 Well, did you ever try to exchange your old car with a new one while you were driving on the motorway? It's exactly the same problem: PlugInstaller is needed to update plugins, but
 if you update a package, this package will first be deactivated (you cannot delete active plugins without throwing lots of error messages). But how should PlugInstaller upgrade itself
 if it is deactivated?
+
+= What can I do if a plugin did not install properly? =
+
+Below the list of deactivated plugins you will find a list of "broken plugins". Broken plugins are subdirectories inside your plugin directory that do not contain any
+plugin files. If a plugin shows up on that list after it has been installed, this means that the plugin cannot be installed by PlugInstaller. You may safely delete the
+broken plugin by selecting the "delete" link behind the directory name.
 
 == Usage ==
 

@@ -27,10 +27,10 @@ Author URI: http://henning.imaginemore.de
 
 // Replace old plugins page
 function pi_replace_plugins_page() {
-   if ((strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/plugins.php')) && ($_GET['page'] == '')) {
+  if ((strpos($_SERVER['SCRIPT_NAME'], 'wp-admin/plugins.php')) && ($_GET['page'] == '')) {
      include(ABSPATH. PLUGINDIR .'/pluginstaller/plugins.php');
      die();
-   }
+  }
 }
 
 add_action('admin_notices', 'pi_replace_plugins_page');

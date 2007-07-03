@@ -37,7 +37,7 @@ function u_get_contents ( $filename ) {
 
 // Check for PlugInstaller updates:
 function pi_check_for_update() {
-  $current_version = '0.1.95';
+  $current_version = '0.2.0';
   $fp = uopen('http://henning.imaginemore.de/pi-version.txt','r');
   $available_version = fgets($fp);
   uclose($fp);

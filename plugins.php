@@ -186,6 +186,16 @@ if (($_GET['update'] != 'check') && ($_GET['update'] != '')) {
 <?php
 }
 
+// Forcibly delete a plugin:
+if ($_GET['force-delete'] != '') {
+?>
+
+<div id="message" class="updated fade"><p><?php echo pi_force_delete($_GET['force-delete']); ?></p>
+</div>
+
+<?php
+}
+
 ?>
 
 <?php if (isset($_GET['activate'])) : ?>
@@ -343,6 +353,58 @@ if (empty($plugins)) {
 <?php
 
 echo $available;
+
+?>	
+	
+</table>
+
+</div>
+</div>
+</fieldset>
+</div>
+
+<div class="dbx-b-ox-wrapper">
+<fieldset id="postexcerpt" class="dbx-box">
+<div class="dbx-h-andle-wrapper">
+<h3 class="dbx-handle"><?php _e('Broken Plugins') ?></h3>
+</div>
+<div class="dbx-c-ontent-wrapper">
+<div class="dbx-content">
+These plugins seem to be broken, that means there is a directory for the plugin, but no plugin file is found inside that directory.<br /><br />
+<table style="width: 100%;" cellspacing='0' cellpadding='0'>
+	
+<?php
+
+// Check for broken plugins:
+
+$broken = "";
+
+$plugin_check = array();
+// reduce plugin files to their directories:
+foreach ($plugins as $fname => $data) {
+  array_push($plugin_check, substr($fname, 0, strrpos($fname, '/')));
+}
+
+// Scan plugins directory:
+$dp = opendir(ABSPATH . PLUGINDIR);
+while (($file = readdir($dp)) !== false) {
+  if ((filetype(ABSPATH . PLUGINDIR . '/' . $file) == 'dir') && ($file != '.') && ($file != '..')) {
+    if (!in_array($file, $plugin_check)) {
+      $broken .= "<tr><td class='name'><strong>$file</strong></td>";
+      $broken .= "<td class='togl' style='width: 150px; vertical-align: top;'>";
+      $broken .= "<a href='javascript:void(null)' onClick=\"if (confirm('Do you really want to delete the plugin directory $file? This may cause side-effects and problems.')) { window.location.href = 'plugins.php?force-delete=$file'; }\"' title='".__('Delete this plugin')."' class='delete'>".__('Delete')."</a>";
+	  $broken .= "</td>";
+      $broken .= "</tr>";
+    }
+  }
+}
+closedir($dp);
+
+if ($broken == "") {
+  $broken = "<strong>There are currently no broken plugins.</strong>";
+}
+
+echo $broken;
 
 ?>	
 	
