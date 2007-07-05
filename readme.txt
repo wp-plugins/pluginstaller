@@ -4,11 +4,13 @@ Donate link: http://henning.imaginemore.de/pluginstaller/donate
 Tags: plugin, admin, install, manage, upload
 Requires at least: 2.0.2
 Tested up to: 2.2
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 
 Install and uninstall plugins from your admin interface without uploading the plugins via FTP and automatically check for plugin updates.
 
 == Description ==
+
+*IMPORTANT!* Version 0.2.1 fixes a severe bug that could lead to complete unusability of your wordpress plugins when installing a corrupt plugin package. *UPGRADE IMMEDIATELY!*
 
 PlugInstaller is a WordPress plugin-management plugin that eliminates the need to download a plugin archive, upload it to your FTP server and unpack it manually. With PlugInstaller, you can easily enter a plugin URL (e.g. directly from a plugin repository website like the WordPress.org plugin repository) within the admin interface which is in turn automatically downloaded and installed on your server or you can upload a file from your local file system which is also automatically installed. If you do no longer like one or more plugins that you previously installed, you can uninstall those plugins with a single click.
 

@@ -109,8 +109,11 @@ function perform_install($package) {
     eregi('(.*)/plugins/([^/]*)/(.*)',$output[$output_pos],$parts);
     $final_pos = $dest_dir . $parts[2] . '/';
   }
+
   
-  $final_pos = pi_sanitize($final_pos);
+  if ($final_pos != $dest_dir . '/') {
+    $final_pos = pi_sanitize($final_pos);
+  }
   
   $readme_dir = $final_pos;
   

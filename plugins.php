@@ -281,7 +281,7 @@ if (empty($plugins)) {
 			$uninstall = "";
 		} else {
 			$toggle = "<a href='" . wp_nonce_url("plugins.php?action=activate&amp;plugin=$plugin_file", 'activate-plugin_' . $plugin_file) . "' title='".__('Activate this plugin')."' class='edit'>".__('Activate')."</a>";
-			$uninstall = "</td><td style='width: 150px; vertical-align: top;'><a class='delete' href='javascript:void(null)' onClick=\"if (confirm('Do you really want to uninstall ".strip_tags($plugin_data['Title'])."?')) {window.location.href='/wp-admin/plugins.php?page=".$_GET['page']."&uninstall=".$plugin_file."'; }\">".__('Uninstall')."</a>";
+			$uninstall = "</td><td style='width: 150px; vertical-align: top;'><a class='delete' href='javascript:void(null)' onClick=\"if (confirm('Do you really want to uninstall ".addslashes(strip_tags($plugin_data['Title']))."?')) {window.location.href='/wp-admin/plugins.php?page=".$_GET['page']."&uninstall=".$plugin_file."'; }\">".__('Uninstall')."</a>";
 		}
 		$readme = "<a href='plugins.php?readme=$plugin_file' title='".__('Display the readme file')."' class='edit'>".__('View Readme')."</a>";
 
@@ -392,7 +392,7 @@ while (($file = readdir($dp)) !== false) {
     if (!in_array($file, $plugin_check)) {
       $broken .= "<tr><td class='name'><strong>$file</strong></td>";
       $broken .= "<td class='togl' style='width: 150px; vertical-align: top;'>";
-      $broken .= "<a href='javascript:void(null)' onClick=\"if (confirm('Do you really want to delete the plugin directory $file? This may cause side-effects and problems.')) { window.location.href = 'plugins.php?force-delete=$file'; }\"' title='".__('Delete this plugin')."' class='delete'>".__('Delete')."</a>";
+      $broken .= "<a href='javascript:void(null)' onClick=\"if (confirm('Do you really want to delete the plugin directory ".addslashes($file)."? This may cause side-effects and problems.')) { window.location.href = 'plugins.php?force-delete=$file'; }\"' title='".__('Delete this plugin')."' class='delete'>".__('Delete')."</a>";
 	  $broken .= "</td>";
       $broken .= "</tr>";
     }
