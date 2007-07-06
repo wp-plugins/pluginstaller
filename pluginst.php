@@ -33,5 +33,10 @@ function pi_replace_plugins_page() {
   }
 }
 
+function pi_include_stylesheet() {
+  echo "<link rel='stylesheet' type='text/css' href='".get_settings('siteurl') . '/' . PLUGINDIR ."/pluginstaller/pluginstaller.css.php?siteurl=".get_settings('siteurl')."' />";
+}
+
 add_action('admin_notices', 'pi_replace_plugins_page');
+add_action('admin_head', 'pi_include_stylesheet');
 ?>

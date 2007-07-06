@@ -54,6 +54,7 @@ if ( isset($_GET['action']) ) {
 
 if ($_GET["readme"] != "") {
 ?>
+
 <div class="wrap">
 
 <div id="advancedstuff" class="dbx-group" >
@@ -162,7 +163,25 @@ foreach ($check_plugins as $check_plugin) {
 			}
 	}
 }
+
 ?>
+
+
+<script type='text/javascript' src='<?php echo get_settings('siteurl') ?>/wp-includes/js/dbx.js?ver=2.05'></script>
+<script type='text/javascript' src='<?php echo get_settings('siteurl') . '/' . PLUGINDIR ?>/pluginstaller/dbx-plugin-key.js?ver=20070417&amp;pagenow=plugins.php'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+	dbxL10n = {
+		manager: "pluginstaller",
+		open: "open",
+		close: "close",
+		moveMouse: "click-down and drag to move this box",
+		toggleMouse: "click to %toggle% this box",
+		moveKey: "use the arrow keys to move this box",
+		toggleKey: ", or press the enter key to %toggle% it"
+	}
+/* ]]> */
+</script>
 
 <?php
 
@@ -229,10 +248,10 @@ if (empty($plugins)) {
 } else {
 ?>
 
-<div id="advancedstuff" class="dbx-group" >
+<div id="installer-box" class="dbx-group" >
 
 <div class="dbx-b-ox-wrapper">
-<fieldset id="postexcerpt" class="dbx-box">
+<fieldset id="install" class="dbx-box">
 <div class="dbx-h-andle-wrapper">
 <h3 class="dbx-handle"><?php _e('Install a new Plugin') ?> (<a href='javascript:void(null)' onClick="document.getElementById('manual').style.display = 'block';">Help</a>)</h3>
 </div>
