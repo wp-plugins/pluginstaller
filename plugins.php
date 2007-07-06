@@ -52,23 +52,24 @@ if ( isset($_GET['action']) ) {
 // Clean up options
 // If any plugins don't exist, axe 'em
 
-if ($_GET["readme"] != "") {
+
 ?>
 
-<div class="wrap">
-
+<div id='readme' style='display: none; z-index: 200; position: absolute; width: 70%; left: 15%; height: 70%;'>
 <div id="advancedstuff" class="dbx-group" >
 
 <div class="dbx-b-ox-wrapper">
 <fieldset id="postexcerpt" class="dbx-box">
 <div class="dbx-h-andle-wrapper">
-<h3 class="dbx-handle"><?php _e('Readme') ?> (<a href='plugins.php'>Go back</a>)</h3>
+<h3 class="dbx-handle"><?php _e('Readme') ?> (<a href='javascript:void(null)' onClick='hideReadme()'>close</a>)</h3>
 </div>
 <div class="dbx-c-ontent-wrapper">
 <div class="dbx-content">
 
-<div style='overflow: auto; height: 300px;'>
+<div style='overflow: auto; height: 400px;'>
 <?php
+
+/*
 
 function parse_readme($readme) {
   // H1
@@ -122,6 +123,8 @@ if ($filename == "") {
     }
 }
 
+*/
+
 ?>
 </div>
 
@@ -129,16 +132,13 @@ if ($filename == "") {
 </div>
 </fieldset>
 </div>
-
-
+</div>
 </div>
 
 
 
 
 <?php
-
-}else{
 
 pi_install();
 
@@ -302,7 +302,7 @@ if (empty($plugins)) {
 			$toggle = "<a href='" . wp_nonce_url("plugins.php?action=activate&amp;plugin=$plugin_file", 'activate-plugin_' . $plugin_file) . "' title='".__('Activate this plugin')."' class='edit'>".__('Activate')."</a>";
 			$uninstall = "</td><td style='width: 150px; vertical-align: top;'><a class='delete' href='javascript:void(null)' onClick=\"if (confirm('Do you really want to uninstall ".addslashes(strip_tags($plugin_data['Title']))."?')) {window.location.href='plugins.php?page=".$_GET['page']."&uninstall=".$plugin_file."'; }\">".__('Uninstall')."</a>";
 		}
-		$readme = "<a href='plugins.php?readme=$plugin_file' title='".__('Display the readme file')."' class='edit'>".__('View Readme')."</a>";
+		$readme = "<a href='javascript:void(null)' onClick=\"showReadme('$plugin_file');\" title='".__('Display the readme file')."' class='edit'>".__('View Readme')."</a>";
 
 		$plugins_allowedtags = array('a' => array('href' => array(),'title' => array()),'abbr' => array('title' => array()),'acronym' => array('title' => array()),'code' => array(),'em' => array(),'strong' => array());
 
@@ -441,7 +441,32 @@ echo $broken;
 ?>
 </div>
 
-<?php } ?>
+
+<!-- the fade box -->
+<div id='fadediv' style='display: none; position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; -moz-opacity: 0.5; opacity: 0.5; filter:alpha(opacity=50); background-color: #000000; z-index: 100;'>&nbsp;</div>
+
+<script type='text/javascript'>
+function fadeOut() {
+  var _docHeight = document.height || document.body.offsetHeight;
+  document.getElementById('fadediv').style.height = _docHeight + 'px';
+  document.getElementById('fadediv').style.display = 'block';
+}
+
+function fadeIn() {
+  document.getElementById('fadediv').style.display = 'none';
+}
+
+function showReadme(plugin) {
+  fadeOut();
+  document.getElementById('readme').style.display = 'block';
+}
+
+function hideReadme() {
+  document.getElementById('readme').style.display = 'none';
+  fadeIn();
+}
+</script>
+
 
 <?php
 include('admin-footer.php');
