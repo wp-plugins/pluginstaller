@@ -8,6 +8,22 @@ require_once($this_dir . '/install.php');
 require_once($this_dir . '/update.php');
 require_once($this_dir . '/utils.php');
 
+if ($_GET['activate'] == 'all') {
+	    $all = get_plugins();
+		foreach ($all as $plugin => $data) {
+		  $current = get_option('active_plugins');
+		  if (!in_array($plugin, $current)) {
+			$current[] = $plugin;
+			sort($current);
+			update_option('active_plugins', $current);
+			include(ABSPATH . PLUGINDIR . '/' . $plugin);
+			do_action('activate_' . $plugin);
+		  }
+		}
+		$activateall = true;
+		unset($_GET['activate']);
+	} 
+
 if ( isset($_GET['action']) ) {
 	if ('activate' == $_GET['action']) {
 		check_admin_referer('activate-plugin_' . $_GET['plugin']);
@@ -52,93 +68,6 @@ if ( isset($_GET['action']) ) {
 // Clean up options
 // If any plugins don't exist, axe 'em
 
-
-?>
-
-<div id='readme' style='display: none; z-index: 200; position: absolute; width: 70%; left: 15%; height: 70%;'>
-<div id="advancedstuff" class="dbx-group" >
-
-<div class="dbx-b-ox-wrapper">
-<fieldset id="postexcerpt" class="dbx-box">
-<div class="dbx-h-andle-wrapper">
-<h3 class="dbx-handle"><?php _e('Readme') ?> (<a href='javascript:void(null)' onClick='hideReadme()'>close</a>)</h3>
-</div>
-<div class="dbx-c-ontent-wrapper">
-<div class="dbx-content">
-
-<div style='overflow: auto; height: 400px;'>
-<?php
-
-/*
-
-function parse_readme($readme) {
-  // H1
-  $readme = eregi_replace('===([^=]*)===','<h2>\\1</h2>',$readme);
-  // H2
-  $readme = eregi_replace('==([^=]*)==','<h3>\\1</h3>',$readme);
-  // H3
-  $readme = eregi_replace('=([^=]*)=','<h4>\\1</h4>',$readme);
-  // Links
-  $readme = eregi_replace('\[([^]]*)\]\(([^)]*)\)',"<a target='_blank' href='\\2'>\\1</a>",$readme);
-  // Auto-URL:
-  $readme = preg_replace("/([^'])(http:\/\/|ftp:\/\/)([^\s,]*)/i","$1<a target='_blank' href='$2$3'>$2$3</a>",$readme);
-  return $readme;
-}
-
-// find the readme file:
-$parts = array();
-eregi('([^/]*)/(.*)',$_GET["readme"], $parts);
-
-$readme_dir  = ABSPATH . PLUGINDIR . '/' . $parts[1] . '/';
-
-if (file_exists($readme_dir . 'readme.html')) {
-  $filename = $readme_dir . 'readme.html';
-}elseif (file_exists($readme_dir . 'README.html')) {
-  $filename = $readme_dir . 'README.html';
-}elseif (file_exists($readme_dir . 'README.HTML')) {
- $filename = $readme_dir . 'README.HTML';
-}elseif (file_exists($readme_dir . 'Readme.html')) {
-  $filename = $readme_dir . 'Readme.html';
-}elseif (file_exists($readme_dir . 'readme.txt')) {
-  $filename = $readme_dir . 'readme.txt';
-}elseif (file_exists($readme_dir . 'README.txt')) {
-  $filename = $readme_dir . 'README.txt';
-}elseif (file_exists($readme_dir . 'README.TXT')) {
-  $filename = $readme_dir . 'README.txt';
-}elseif (file_exists($readme_dir . 'Readme.txt')) {
-  $filename = $readme_dir . 'Readme.txt';
-}elseif (file_exists($readme_dir . 'README')) {
-  $filename = $readme_dir . 'README';
-}
-
-
-// Display:
-if ($filename == "") {
-  echo "<h3>Sorry, there is no readme file available for this plugin!</h3>";
-}else{
-    if (stristr($filename, 'html') !== false) {
-      echo file_get_contents($filename);
-    }else{
-      echo nl2br(pi_parse_readme(file_get_contents($filename)));
-    }
-}
-
-*/
-
-?>
-</div>
-
-</div>
-</div>
-</fieldset>
-</div>
-</div>
-</div>
-
-
-
-
-<?php
 
 pi_install();
 
@@ -228,10 +157,86 @@ if ($_GET['force-delete'] != '') {
 <?php if (isset($_GET['deactivate-all'])) : ?>
 	<div id="message" class="updated fade"><p><?php _e('All plugins <strong>deactivated</strong>.'); ?></p></div>
 <?php endif; ?>
+<?php if ($activateall) : ?>
+	<div id="message" class="updated fade"><p><?php _e('All plugins <strong>activated</strong>.'); ?></p></div>
+<?php endif; ?>
 
 <?php pi_check_for_update(); ?>
 
 <div class="wrap">
+
+
+<div id='readme' style='padding: 10px; background-color: #FFFFFF; display: none; z-index: 200; position: absolute; width: 70%; left: 15%; height: 70%;'>
+<h2><?php _e('Readme') ?> (<a href='javascript:void(null)' onClick='hideReadme()'>close</a>)</h2>
+
+<div id='the_readme' style='overflow: auto; height: 400px;'>
+<?php
+
+/*
+
+function parse_readme($readme) {
+  // H1
+  $readme = eregi_replace('===([^=]*)===','<h2>\\1</h2>',$readme);
+  // H2
+  $readme = eregi_replace('==([^=]*)==','<h3>\\1</h3>',$readme);
+  // H3
+  $readme = eregi_replace('=([^=]*)=','<h4>\\1</h4>',$readme);
+  // Links
+  $readme = eregi_replace('\[([^]]*)\]\(([^)]*)\)',"<a target='_blank' href='\\2'>\\1</a>",$readme);
+  // Auto-URL:
+  $readme = preg_replace("/([^'])(http:\/\/|ftp:\/\/)([^\s,]*)/i","$1<a target='_blank' href='$2$3'>$2$3</a>",$readme);
+  return $readme;
+}
+
+// find the readme file:
+$parts = array();
+eregi('([^/]*)/(.*)',$_GET["readme"], $parts);
+
+$readme_dir  = ABSPATH . PLUGINDIR . '/' . $parts[1] . '/';
+
+if (file_exists($readme_dir . 'readme.html')) {
+  $filename = $readme_dir . 'readme.html';
+}elseif (file_exists($readme_dir . 'README.html')) {
+  $filename = $readme_dir . 'README.html';
+}elseif (file_exists($readme_dir . 'README.HTML')) {
+ $filename = $readme_dir . 'README.HTML';
+}elseif (file_exists($readme_dir . 'Readme.html')) {
+  $filename = $readme_dir . 'Readme.html';
+}elseif (file_exists($readme_dir . 'readme.txt')) {
+  $filename = $readme_dir . 'readme.txt';
+}elseif (file_exists($readme_dir . 'README.txt')) {
+  $filename = $readme_dir . 'README.txt';
+}elseif (file_exists($readme_dir . 'README.TXT')) {
+  $filename = $readme_dir . 'README.txt';
+}elseif (file_exists($readme_dir . 'Readme.txt')) {
+  $filename = $readme_dir . 'Readme.txt';
+}elseif (file_exists($readme_dir . 'README')) {
+  $filename = $readme_dir . 'README';
+}
+
+
+// Display:
+if ($filename == "") {
+  echo "<h3>Sorry, there is no readme file available for this plugin!</h3>";
+}else{
+    if (stristr($filename, 'html') !== false) {
+      echo file_get_contents($filename);
+    }else{
+      echo nl2br(pi_parse_readme(file_get_contents($filename)));
+    }
+}
+
+*/
+
+?>
+</div>
+
+</div>
+
+
+
+
+
 <h2><?php _e('Plugin Management'); ?></h2>
 <p><?php _e('Plugins extend and expand the functionality of WordPress. Once a plugin is installed, you may activate it or deactivate it here.'); ?></p>
 <?php
@@ -374,6 +379,12 @@ if (empty($plugins)) {
 echo $available;
 
 ?>	
+
+<tr>
+  <td>&nbsp;</td>
+  <td align='center'><br /><input type='button' class='button' value='Activate all' onClick='if (confirm("Do you really want to activate all plugins?")) { window.location.href = "plugins.php?activate=all"; }'></td>
+  <td>&nbsp;</td>
+</tr>
 	
 </table>
 

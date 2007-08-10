@@ -216,7 +216,7 @@ function pi_sanitize($position) {
   $mfdir = $mfparts[count($mfparts) - 2];
   $pparts = explode('/',$position);
   $pdir = $pparts[count($pparts) - 2];
-  if ($mfdir != $pdir) {
+  if (($mfdir != $pdir) && ($main_file != "")) {
     // move main files to new dir:
     $o_mfdir = substr($main_file, 0, strrpos($main_file, '/'));
     dirmv($o_mfdir, ABSPATH . PLUGINDIR);
